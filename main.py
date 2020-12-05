@@ -6,7 +6,6 @@ from childWindows import HelpWindow, SettingsWindow
 from threading import Thread
 import sys
 
-
 class TranslateThread(QtCore.QObject):
     overSignal = QtCore.pyqtSignal(str)
 

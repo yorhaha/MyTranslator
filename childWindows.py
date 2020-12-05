@@ -1,7 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 from config import *
 from utils import moveCenter
-import copy
 
 class HelpWindow(QtWidgets.QDialog):
     def __init__(self):

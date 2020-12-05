@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QSettings
-import os
+from os import path
 
 BAIDU_URL = "https://fanyi-api.baidu.com/api/trans/vip/translate"
 GOOGLE_URL = "http://translate.google.cn/translate_a/single"
@@ -29,7 +29,7 @@ DEFAULT_SETTINGS = {
 class Settings(dict):
     def __init__(self, item):
         super().__init__(item)
-        if not os.path.exists(INI_FILE) or not os.path.isfile(INI_FILE):
+        if not path.exists(INI_FILE) or not path.isfile(INI_FILE):
             with open(INI_FILE, 'w') as f:
                 pass
             self.settingFile = QSettings(INI_FILE, QSettings.IniFormat)
