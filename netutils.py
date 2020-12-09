@@ -3,36 +3,52 @@ import json
 from config import *
 from random import randint
 from requests import get as requestsGet
-# from hashlib import md5
+from requests import post as requestsPost
+from hashlib import md5
 
-# def baidu_trans(text, lang_from, lang_to):
-#     salt = randint(1e3, 1e6)
-#     sign = BAIDU_APPID + text + str(salt) + BAIDU_SECRET
-#     sign = md5(sign.encode()).hexdigest()
-#     res = requests.post(
-#         url=BAIDU_URL,
-#         data={
-#             "q": text,
-#             "from": LANGUAGES[lang_from],
-#             "to": LANGUAGES[lang_to],
-#             "appid": BAIDU_APPID,
-#             "salt": salt,
-#             "sign": sign
-#         }
-#     )
-#     if not res.ok:
-#         return None
-#     res_dict = json.loads(res.text)
-#     if res_dict.get("error_code"):
-#         return None
-#     answer = ''
-#     for e in res_dict["trans_result"]:
-#         answer += e['dst']
-#         answer += '\n'
-#     answer = answer[:-1]
-#     return answer
+def baiduTrans(text, lang_from, lang_to):
+    if DEBUG_FLAG:
+        print('baidu_trans(', text, lang_from, lang_to, ')')
+        print('BAIDU_APPID = ', settings.BAIDU_APPID)
+        print('BAIDU_SECRET = ', settings.BAIDU_SECRET)
+    salt = randint(1e3, 1e6)
+    sign = settings.BAIDU_APPID + text + str(salt) + settings.BAIDU_SECRET
+    sign = md5(sign.encode()).hexdigest()
+    res = requestsPost(
+        url=BAIDU_URL,
+        data={
+            "q": text,
+            "from": BAIDU_LANGUAGES[lang_from],
+            "to": BAIDU_LANGUAGES[lang_to],
+            "appid": settings.BAIDU_APPID,
+            "salt": salt,
+            "sign": sign
+        }
+    )
+    if DEBUG_FLAG:
+        print({
+            "q": text,
+            "from": BAIDU_LANGUAGES[lang_from],
+            "to": BAIDU_LANGUAGES[lang_to],
+            "appid": settings.BAIDU_APPID,
+            "salt": salt,
+            "sign": sign
+        })
+    if not res.ok:
+        return None
+    res_dict = json.loads(res.text)
+    if res_dict.get("error_code"):
+        return None
+    answer = ''
+    for e in res_dict["trans_result"]:
+        answer += e['dst']
+        answer += '\n'
+    answer = answer[:-1]
+    return answer
 
 def googleTrans(text, langFrom, langTo):
+    if DEBUG_FLAG:
+        print('Using Google Method')
     res = requestsGet(
         url=GOOGLE_URL,
         params={
@@ -40,8 +56,8 @@ def googleTrans(text, langFrom, langTo):
             "dt": "t",
             "dj": "1",
             "ie": "UTF-8",
-            "sl": LANGUAGES[langFrom],
-            "tl": LANGUAGES[langTo],
+            "sl": GOOGLE_LANGUAGES[langFrom],
+            "tl": GOOGLE_LANGUAGES[langTo],
             "q": text
         }
     )
@@ -57,11 +73,17 @@ def googleTrans(text, langFrom, langTo):
 
 
 def translateText(text, trans_method, lang_from, lang_to):
-    if text is None or Method is None:
+    if text is None:
         return None
     if text == "":
         return ""
-    if trans_method == Method.BAIDU:
+    
+    if DEBUG_FLAG:
+        print('translateText(', text, trans_method, lang_from, lang_to, ')')
+
+    if trans_method == 'Google':
         return googleTrans(text, lang_from, lang_to)
+    elif trans_method == 'Baidu':
+        return baiduTrans(text, lang_from, lang_to)
     return None
 

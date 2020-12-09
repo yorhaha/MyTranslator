@@ -14,13 +14,17 @@ class TranslateThread(QtCore.QObject):
     
     @QtCore.pyqtSlot(str, str, str)
     def startTrans(self, srcText, lang_from, lang_to):
+        if DEBUG_FLAG:
+            print("startTrans(", srcText, lang_from, lang_to, ")")
         if srcText == "":
             self.overSignal.emit("")
             return
         try:
-            dstText = translateText(srcText, Method.BAIDU, lang_from, lang_to)
+            dstText = translateText(srcText, settings["Method"], lang_from, lang_to)
             self.overSignal.emit(dstText)
-        except Exception:
+        except Exception as ex:
+            if DEBUG_FLAG:
+                print(str(ex))
             self.overSignal.emit("")
 
 class TransArea(QtWidgets.QWidget):
@@ -31,7 +35,7 @@ class TransArea(QtWidgets.QWidget):
         self.textArea = QtWidgets.QTextEdit()
         self.title = QtWidgets.QLabel(text=title)
 
-        self.keys = list(LANGUAGES.keys())
+        self.keys = LANGUAGE_LIST[:]
         if not auto:
             self.keys.remove("Auto")
 
@@ -78,7 +82,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.innerThread = TranslateThread()
 
         self.wordNumLabel = QtWidgets.QLabel()
-        self.autoStripBox = QtWidgets.QCheckBox(hint.autoStrip)
         self.autoCopyBox = QtWidgets.QCheckBox(hint.autoCopy)
 
         self.initUI()
@@ -88,7 +91,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def updateWordNumLabel(self):
         self.wordNumLabel.setText("{}/{}".format(
             len(self.srcArea.textArea.toPlainText()),
-            settings['MaxWord']
+            MAX_WORD
         ))
     
     def initSrcArea(self):
@@ -96,15 +99,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.srcArea.language.setCurrentIndex(self.srcArea.keys.index(settings['LangFrom']))
         self.srcArea.bottomArea.addWidget(self.wordNumLabel)
 
-        self.autoStripBox.setChecked(settings['AutoStrip'])
-        self.autoStripBox.stateChanged.connect(self.autoStripChanged)
         copyButton = QtWidgets.QPushButton(hint.copy)
         copyButton.clicked.connect(lambda: self.copyButtonClicked(self.srcArea.textArea.toPlainText()))
         clearButton = QtWidgets.QPushButton(hint.clear)
         clearButton.clicked.connect(self.clearButtonClicked)
 
         self.srcArea.bottomArea.addStretch(1)
-        self.srcArea.bottomArea.addWidget(self.autoStripBox)
         self.srcArea.bottomArea.addWidget(clearButton)
         self.srcArea.bottomArea.addWidget(copyButton)
     
@@ -188,16 +188,21 @@ class MainWindow(QtWidgets.QMainWindow):
     
     @QtCore.pyqtSlot()
     def translate(self):
+        if DEBUG_FLAG:
+            print('Start translate')
         srcText = self.srcArea.textArea.toPlainText()
-        if settings['AutoStrip']:
-            srcText = deleteExtraSpace(srcText)
+        srcText = deleteExtraSpace(srcText)
         if srcText == "":
             return
         self.requestTransSignal.emit(srcText, settings['LangFrom'], settings['LangTo'])
+        if isChinese(srcText) and len(srcText) > MAX_ZH_CHAR:
+            self.statusbar.showMessage(hint.translating + hint.tooManyContent)
         self.statusbar.showMessage(hint.translating)
     
     @QtCore.pyqtSlot(str)
     def updateDstArea(self, dstText):
+        if DEBUG_FLAG:
+            print('updateDstArea(', dstText, ')', len(dstText))
         if dstText != "":
             self.dstArea.textArea.setText(dstText)
             self.statusbar.showMessage(hint.succeed)
@@ -209,8 +214,8 @@ class MainWindow(QtWidgets.QMainWindow):
     @QtCore.pyqtSlot()
     def textChanged(self):
         srcText = self.srcArea.textArea.toPlainText()
-        if len(srcText) > settings['MaxWord']:
-            srcText = srcText[:settings['MaxWord']]
+        if len(srcText) > MAX_WORD:
+            srcText = srcText[:MAX_WORD]
             self.srcArea.textArea.setText(srcText)
             self.statusbar.showMessage(hint.exceed)
         self.updateWordNumLabel()
@@ -219,11 +224,6 @@ class MainWindow(QtWidgets.QMainWindow):
     @QtCore.pyqtSlot()
     def autoCopyChanged(self):
         settings['AutoCopy'] = not settings['AutoCopy']
-        self.srcArea.textArea.setFocus()
-    
-    @QtCore.pyqtSlot()
-    def autoStripChanged(self):
-        settings['AutoStrip'] = not settings['AutoStrip']
         self.srcArea.textArea.setFocus()
     
     @QtCore.pyqtSlot()

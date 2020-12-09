@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 from config import *
-from utils import moveCenter
+from utils import moveCenter, encrypt, decrypt
 
 class HelpWindow(QtWidgets.QDialog):
     def __init__(self):
@@ -38,17 +38,24 @@ class SettingsWindow(QtWidgets.QDialog):
         super().__init__()
         self.setLanguageLabel = QtWidgets.QLabel(hint.setLanguage)
         self.setLanguageBox = QtWidgets.QComboBox()
+        self.needReloadLabel = QtWidgets.QLabel(hint.needReload)
         self.setDelayLabel = QtWidgets.QLabel(hint.setDelay)
         self.setDelayBox = QtWidgets.QComboBox()
+        self.setMethodLabel = QtWidgets.QLabel(hint.method)
+        self.setMethodBox = QtWidgets.QComboBox()
+        self.baiduAppidLabel = QtWidgets.QLabel(hint.baiduAppId)
+        self.baiduAppidInput = QtWidgets.QLineEdit()
+        self.baiduSecretLabel = QtWidgets.QLabel(hint.baiduSecret)
+        self.baiduSecretInput = QtWidgets.QLineEdit()
         self.cancelButton = QtWidgets.QPushButton(hint.cancel)
         self.saveButton = QtWidgets.QPushButton(hint.save)
-        self.needReloadLabel = QtWidgets.QLabel(hint.needReload)
 
         self.newSettings = dict(DEFAULT_SETTINGS)
         for key in list(DEFAULT_SETTINGS.keys()):
             self.newSettings[key] = settings[key]
 
         self.initComboBox()
+        self.initLineEdit()
         self.initButtons()
         self.initUI()
     
@@ -60,6 +67,15 @@ class SettingsWindow(QtWidgets.QDialog):
         self.setDelayBox.addItems([str(e) for e in DELAY_LIST])
         self.setDelayBox.setCurrentIndex(DELAY_LIST.index(settings['TranlateDelay']))
         self.setDelayBox.currentIndexChanged.connect(self.changeTranslateDelay)
+
+        self.setMethodBox.addItems([hint.methodList[i] for i in range(len(TRANSLATE_METHOD))])
+        self.setMethodBox.setCurrentIndex(TRANSLATE_METHOD.index(settings['Method']))
+        self.setMethodBox.currentIndexChanged.connect(self.changeMethod) # TODO
+    
+    def initLineEdit(self):
+        self.baiduSecretInput.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.baiduAppidInput.setText(decrypt(settings['BaiduAppid']))
+        self.baiduSecretInput.setText(decrypt(settings['BaiduSecret']))
     
     def initButtons(self):
         self.cancelButton.clicked.connect(self.close)
@@ -67,6 +83,10 @@ class SettingsWindow(QtWidgets.QDialog):
     
     @QtCore.pyqtSlot()
     def saveSettings(self):
+        settings.BAIDU_APPID = self.baiduAppidInput.text()
+        settings.BAIDU_SECRET = self.baiduSecretInput.text()
+        self.newSettings['BaiduAppid'] = encrypt(settings.BAIDU_APPID)
+        self.newSettings['BaiduSecret'] = encrypt(settings.BAIDU_SECRET)
         for key in list(DEFAULT_SETTINGS.keys()):
             settings[key] = self.newSettings[key]
         settings.writeSettings()
@@ -80,6 +100,10 @@ class SettingsWindow(QtWidgets.QDialog):
     def changeTranslateDelay(self, i):
         self.newSettings['TranlateDelay'] = DELAY_LIST[i]
     
+    @QtCore.pyqtSlot(int)
+    def changeMethod(self, i):
+        self.newSettings['Method'] = TRANSLATE_METHOD[i]
+    
     def initUI(self):
         hBox = QtWidgets.QHBoxLayout()
         vBox= QtWidgets.QVBoxLayout()
@@ -90,6 +114,12 @@ class SettingsWindow(QtWidgets.QDialog):
         gridBox.addWidget(self.needReloadLabel, 0, 2)
         gridBox.addWidget(self.setDelayLabel, 1, 0)
         gridBox.addWidget(self.setDelayBox, 1, 1)
+        gridBox.addWidget(self.setMethodLabel, 2, 0)
+        gridBox.addWidget(self.setMethodBox, 2, 1)
+        gridBox.addWidget(self.baiduAppidLabel, 3, 0)
+        gridBox.addWidget(self.baiduAppidInput, 3, 1)
+        gridBox.addWidget(self.baiduSecretLabel, 4, 0)
+        gridBox.addWidget(self.baiduSecretInput, 4, 1)
         gridBox.setColumnStretch(0, 1)
         gridBox.setColumnStretch(1, 2)
 
