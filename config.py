@@ -5,23 +5,11 @@ from utils import encrypt, decrypt
 BAIDU_URL = "https://fanyi-api.baidu.com/api/trans/vip/translate"
 GOOGLE_URL = "http://translate.google.cn/translate_a/single"
 
-TRANSLATE_METHOD = ['Google', 'Baidu']
-
-# BAIDU_APPID = ''
-# BAIDU_SECRET = ''
-
-DEBUG_FLAG = True
-
-# LANGUAGES = {
-#     "Auto": "auto",
-#     "Chinese": "zh",
-#     "English": "en",
-#     "Japanese": "ja",
-#     "Traditional Chinese": "zh_TW"
-# }
+DEBUG_FLAG = False
 
 DELAY_LIST = [1000, 1500, 2000, 2500, 3000, 4000]
 
+TRANSLATE_METHOD = ['Google', 'Baidu']
 LANGUAGE_LIST = ["Auto", "Chinese", "English", "Japanese", "Traditional Chinese"]
 LANGUAGE_VERSIONS = ['Chinese', 'English']
 
