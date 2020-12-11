@@ -114,7 +114,10 @@ class Hint:
         self.needReload = '(Need reload)'
         self.help = 'Help'
         self.yes = 'OK'
-        self.helpContent = '''Welcome to visit my Github: <br/><br/>
+        self.helpContent = '''
+            Baidu provides free translation server. Get APPID and Secret here: <br/><br/>
+            <a href='https://api.fanyi.baidu.com/product/11'>Register Baidu API</a><br/><br/>
+            Welcome to visit my Github: <br/><br/>
             <a href='https://github.com/blueice-thu/MyTranslator'>Github</a>
             &nbsp;
             <a href='https://blueice-thu.github.io'>GitPage</a>
@@ -147,7 +150,10 @@ class Hint:
             self.needReload = '(重启生效)'
             self.help = '帮助'
             self.yes = '确定'
-            self.helpContent = '''欢迎访问我的 Github: <br/><br/>
+            self.helpContent = '''
+                百度提供免费的翻译服务，你可以注册以获得 APPID 和 Secret: <br/><br/>
+                <a href='https://api.fanyi.baidu.com/product/11'>注册百度翻译 API</a><br/><br/>
+                欢迎访问我的 Github: <br/><br/>
                 <a href='https://github.com/blueice-thu/MyTranslator'>Github</a>
                 &nbsp;
                 <a href='https://blueice-thu.github.io'>GitPage</a>
