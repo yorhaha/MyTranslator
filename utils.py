@@ -1,11 +1,13 @@
 from PyQt5.QtWidgets import QFrame, QDesktopWidget, QApplication
 from base64 import b64encode, b64decode
 
+
 def getVLine():
     devideLine = QFrame()
     devideLine.setFrameShape(QFrame.VLine)
     devideLine.setMaximumWidth(1)
     return devideLine
+
 
 def getHLine():
     devideLine = QFrame()
@@ -13,11 +15,13 @@ def getHLine():
     devideLine.setMaximumHeight(1)
     return devideLine
 
+
 def moveCenter(window):
     qr = window.frameGeometry()
     cp = QDesktopWidget().availableGeometry().center()
     qr.moveCenter(cp)
     window.move(qr.topLeft())
+
 
 def deleteExtraSpace(srcText):
     result = ''
@@ -29,14 +33,17 @@ def deleteExtraSpace(srcText):
     result = result[:-1]
     return result
 
+
 def copyText(text):
     QApplication.clipboard().setText(text)
+
 
 def isChinese(text):
     for ch in text:
         if u'\u4e00' <= ch <= u'\u9fff':
             return True
     return False
+
 
 def encrypt(text):
     if text == '':
@@ -46,6 +53,7 @@ def encrypt(text):
     text = text * 3
     text = b64encode(text.encode()).decode()
     return text
+
 
 def decrypt(text):
     if text == '':
@@ -64,3 +72,9 @@ def decrypt(text):
         text = text[:-1]
     text = text[::-1]
     return text
+
+
+def readQss(path, filename):
+    filePath = path + '/' + filename + '/' + filename + '.qss'
+    with open(filePath, encoding='utf8') as f:
+        return f.read().replace("url(:", "url(" + path + '/' + filename + '/')
