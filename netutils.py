@@ -71,6 +71,40 @@ def googleTrans(text, langFrom, langTo):
     answer = answer[:-1]
     return answer
 
+def youdaoTrans(text, langFrom, langTo, isSentence=True):
+    if DEBUG_FLAG:
+        print({
+            "doctype": "json",
+            "type": YOUDAO_LANGUAGES[langFrom] + '2' + YOUDAO_LANGUAGES[langTo],
+            'i': text
+        })
+    transType = 'AUTO2' + YOUDAO_LANGUAGES[langTo]
+    if langFrom != 'Auto':
+        transType = YOUDAO_LANGUAGES[langFrom] + '2' + YOUDAO_LANGUAGES[langTo]
+    res = requestsGet(
+        url=YOUDAO_URL,
+        params={
+            "doctype": "json",
+            "type": transType,
+            'i': text
+        }
+    )
+    if not res.ok:
+        return None
+    res = json.loads(res.text)
+    if DEBUG_FLAG:
+        print(res)
+    errorCode = res["errorCode"]
+    if errorCode != 0:
+        return None
+    translateResult = res["translateResult"]
+    answer = ""
+    for sen in translateResult:
+        for s in sen:
+            answer += s["tgt"]
+        answer += "\n"
+    answer = answer[:-1]
+    return answer
 
 def translateText(text, trans_method, lang_from, lang_to):
     if text is None:
@@ -85,5 +119,7 @@ def translateText(text, trans_method, lang_from, lang_to):
         return googleTrans(text, lang_from, lang_to)
     elif trans_method == 'Baidu':
         return baiduTrans(text, lang_from, lang_to)
+    elif trans_method == 'Youdao':
+        return youdaoTrans(text, lang_from, lang_to)
     return None
 

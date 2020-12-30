@@ -4,12 +4,13 @@ from utils import decrypt
 
 BAIDU_URL = "https://fanyi-api.baidu.com/api/trans/vip/translate"
 GOOGLE_URL = "http://translate.google.cn/translate_a/single"
+YOUDAO_URL = "http://fanyi.youdao.com/translate"
 
-DEBUG_FLAG = False
+DEBUG_FLAG = True
 
 DELAY_LIST = [1000, 1500, 2000, 2500, 3000, 4000]
 
-TRANSLATE_METHOD = ['Google', 'Baidu']
+TRANSLATE_METHOD = ['Google', 'Baidu', 'Youdao']
 LANGUAGE_LIST = ["Auto", "Chinese", "English", "Japanese", "Traditional Chinese"]
 LANGUAGE_VERSIONS = ['Chinese', 'English']
 
@@ -96,8 +97,10 @@ BAIDU_LANGUAGES = {
 }
 
 YOUDAO_LANGUAGES = {
-    "Auto": "",
-    "English": "en"
+    "Auto": "AUTO",
+    "English": "EN",
+    "Chinese": "ZH_CN",
+    "Japanese": "JA"
 }
 
 
@@ -129,7 +132,7 @@ class Hint:
         self.setLanguage = 'Language: '
         self.setDelay = 'Translate Delay (ms): '
         self.setTheme = 'Theme: '
-        self.methodList = ['Google', 'Baidu']
+        self.methodList = ['Google', 'Baidu', 'Youdao']
         self.method = 'Translate Method: '
         self.baiduAppId = 'Baidu AppID: '
         self.baiduSecret = 'Baidu Secret: '
@@ -165,7 +168,7 @@ class Hint:
             self.setLanguage = '语言: '
             self.setDelay = '翻译延迟/ms: '
             self.setTheme = '主题: '
-            self.methodList = ['谷歌', '百度']
+            self.methodList = ['谷歌', '百度', '有道']
             self.method = '翻译引擎: '
             self.baiduAppId = '百度翻译AppID: '
             self.baiduSecret = '百度翻译密钥: '
