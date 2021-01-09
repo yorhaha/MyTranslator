@@ -24,7 +24,7 @@ class HelpWindow(BaseDialog):
     def initUI(self):
         self.loadTheme()
         self.resize(400, 200)
-        self.setWindowTitle(hint.help)
+        self.setWindowTitle(hint['help'])
         self.setWindowIcon(QIcon('./res/translate.png'))
         self.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint)
         self.setFont(QFont('Microsoft YaHei', 10))
@@ -33,12 +33,12 @@ class HelpWindow(BaseDialog):
         mainVBox = QVBoxLayout()
         firstLabel = QLabel()
         hbox = QHBoxLayout()
-        okButton = QPushButton(hint.yes)
+        okButton = QPushButton(hint['yes'])
         hbox.addStretch(1)
         hbox.addWidget(okButton)
         hbox.addStretch(1)
 
-        firstLabel.setText(hint.helpContent)
+        firstLabel.setText(hint['helpContent'])
         firstLabel.setOpenExternalLinks(True)
         firstLabel.setAlignment(Qt.AlignCenter)
         okButton.clicked.connect(self.close)
@@ -52,22 +52,22 @@ class HelpWindow(BaseDialog):
 class SettingsWindow(BaseDialog):
     def __init__(self):
         super().__init__()
-        self.setLanguageLabel = QLabel(hint.setLanguage)
+        self.setLanguageLabel = QLabel(hint['setLanguage'])
         self.setLanguageBox = QComboBox()
-        self.needReloadLabel = QLabel(hint.needReload)
-        self.setDelayLabel = QLabel(hint.setDelay)
+        self.needReloadLabel = QLabel(hint['needReload'])
+        self.setDelayLabel = QLabel(hint['setDelay'])
         self.setDelayBox = QComboBox()
-        self.setThemeLabel = QLabel(hint.setTheme)
+        self.setThemeLabel = QLabel(hint['setTheme'])
         self.setThemeBox = QComboBox()
-        self.setMethodLabel = QLabel(hint.method)
+        self.setMethodLabel = QLabel(hint['method'])
         self.setMethodBox = QComboBox()
-        self.baiduAppidLabel = QLabel(hint.baiduAppId)
+        self.baiduAppidLabel = QLabel(hint['baiduAppId'])
         self.baiduAppidInput = QLineEdit()
-        self.baiduSecretLabel = QLabel(hint.baiduSecret)
+        self.baiduSecretLabel = QLabel(hint['baiduSecret'])
         self.baiduSecretInput = QLineEdit()
-        self.writeBaiduSecretButton = QPushButton(hint.write)
-        self.cancelButton = QPushButton(hint.cancel)
-        self.saveButton = QPushButton(hint.save)
+        self.writeBaiduSecretButton = QPushButton(hint['write'])
+        self.cancelButton = QPushButton(hint['cancel'])
+        self.saveButton = QPushButton(hint['save'])
 
         self.newSettings = dict(DEFAULT_SETTINGS)
         for key in list(DEFAULT_SETTINGS.keys()):
@@ -87,7 +87,7 @@ class SettingsWindow(BaseDialog):
         self.setDelayBox.setCurrentIndex(DELAY_LIST.index(settings['TranlateDelay']))
         self.setDelayBox.currentIndexChanged.connect(self.changeTranslateDelay)
 
-        self.setMethodBox.addItems([hint.methodList[i] for i in range(len(TRANSLATE_METHOD))])
+        self.setMethodBox.addItems([hint['methodList'][i] for i in range(len(TRANSLATE_METHOD))])
         self.setMethodBox.setCurrentIndex(TRANSLATE_METHOD.index(settings['Method']))
         self.setMethodBox.currentIndexChanged.connect(self.changeMethod)
 
@@ -145,7 +145,7 @@ class SettingsWindow(BaseDialog):
 
     def initUI(self):
         self.resize(600, 300)
-        self.setWindowTitle(hint.settings)
+        self.setWindowTitle(hint['settings'])
         self.setWindowIcon(QIcon('./res/settings.png'))
         self.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint)
         self.setFont(QFont('Microsoft YaHei', 10))
@@ -185,3 +185,18 @@ class SettingsWindow(BaseDialog):
 
         self.setLayout(hBox)
         self.saveButton.setFocus()
+
+
+class UpdateWindow(BaseDialog):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+    
+    def initUI(self):
+        self.loadTheme()
+        self.resize(400, 200)
+        self.setWindowTitle(hint['help'])
+        self.setWindowIcon(QIcon('./res/translate.png'))
+        self.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint)
+        self.setFont(QFont('Microsoft YaHei', 10))
+        moveCenter(self)

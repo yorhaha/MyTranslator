@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QFrame, QDesktopWidget, QApplication
 from base64 import b64encode, b64decode
+from requests import session
 
 
 def getVLine():
@@ -78,3 +79,24 @@ def readQss(path, filename):
     filePath = path + '/' + filename + '/' + filename + '.qss'
     with open(filePath, encoding='utf8') as f:
         return f.read().replace("url(:", "url(" + path + '/' + filename + '/')
+
+
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
+}
+proxies = {
+    'http': None,
+    'https': None
+}
+
+
+def getUrl(url):
+    s = session()
+    s.keep_alive = False
+    response = s.get(
+        url=url,
+        headers=headers,
+        proxies=proxies,
+        timeout=3
+    )
+    return response

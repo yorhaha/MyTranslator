@@ -6,8 +6,10 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QHBoxLayout, QVB
 from config import *
 from netutils import *
 from utils import *
-from childWindows import HelpWindow, SettingsWindow
+from Updater import hasNewVersion
+from childWindows import HelpWindow, SettingsWindow, UpdateWindow
 import sys
+from threading import Thread
 
 
 class TranslateThread(QObject):
@@ -75,8 +77,8 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.srcArea = TransArea(title=hint.original, auto=True)
-        self.dstArea = TransArea(title=hint.target, auto=False)
+        self.srcArea = TransArea(title=hint['original'], auto=True)
+        self.dstArea = TransArea(title=hint['target'], auto=False)
 
         self.statusbar = QStatusBar()
         self.setStatusBar(self.statusbar)
@@ -87,14 +89,18 @@ class MainWindow(QMainWindow):
         self.innerThread = TranslateThread()
 
         self.wordNumLabel = QLabel()
-        self.autoTransBox = QCheckBox(hint.autoTrans)
-        self.autoCopyBox = QCheckBox(hint.autoCopy)
-        self.translateButton = QPushButton(hint.translate)
+        self.autoTransBox = QCheckBox(hint['autoTrans'])
+        self.autoCopyBox = QCheckBox(hint['autoCopy'])
+        self.translateButton = QPushButton(hint['translate'])
 
         self.initUI()
         self.loadTheme()
         self.initConnections()
         self.srcArea.textArea.setFocus()
+        
+        if settings['CheckUpdate']:
+            updateThread = Thread(target=self.checkUpdate)
+            updateThread.start()
 
     def loadTheme(self, theme=None):
         if theme is None:
@@ -112,9 +118,9 @@ class MainWindow(QMainWindow):
         self.srcArea.language.setCurrentIndex(self.srcArea.keys.index(settings['LangFrom']))
         self.srcArea.bottomArea.addWidget(self.wordNumLabel)
 
-        copyButton = QPushButton(hint.copy)
+        copyButton = QPushButton(hint['copy'])
         copyButton.clicked.connect(lambda: self.copyButtonClicked(self.srcArea.textArea.toPlainText()))
-        clearButton = QPushButton(hint.clear)
+        clearButton = QPushButton(hint['clear'])
         clearButton.clicked.connect(self.clearButtonClicked)
         self.translateButton.clicked.connect(self.translate)
 
@@ -130,7 +136,7 @@ class MainWindow(QMainWindow):
 
     def initDstArea(self):
         self.dstArea.language.setCurrentIndex(self.dstArea.keys.index(settings['LangTo']))
-        copyButton = QPushButton(hint.copy)
+        copyButton = QPushButton(hint['copy'])
         copyButton.clicked.connect(lambda: self.copyButtonClicked(self.dstArea.textArea.toPlainText()))
 
         self.autoCopyBox.setChecked(settings['AutoCopy'])
@@ -140,7 +146,7 @@ class MainWindow(QMainWindow):
         self.dstArea.bottomArea.addWidget(copyButton)
 
     def initToolbar(self):
-        toolbar = self.addToolBar(hint.settings)
+        toolbar = self.addToolBar(hint['settings'])
         toolbar.setMovable(False)
 
         settingsAction = QAction(QIcon('res/settings.png'), '&Settings', self)
@@ -215,8 +221,8 @@ class MainWindow(QMainWindow):
             return
         self.requestTransSignal.emit(srcText, settings['LangFrom'], settings['LangTo'])
         if isChinese(srcText) and len(srcText) > MAX_ZH_CHAR:
-            self.statusbar.showMessage(hint.translating + hint.tooManyContent)
-        self.statusbar.showMessage(hint.translating)
+            self.statusbar.showMessage(hint['translating'] + hint['tooManyContent'])
+        self.statusbar.showMessage(hint['translating'])
 
     @pyqtSlot(str)
     def updateDstArea(self, dstText):
@@ -224,11 +230,11 @@ class MainWindow(QMainWindow):
             print('updateDstArea(', dstText, ')', len(dstText))
         if dstText != "":
             self.dstArea.textArea.setText(dstText)
-            self.statusbar.showMessage(hint.succeed)
+            self.statusbar.showMessage(hint['succeed'])
             if settings['AutoCopy']:
                 QApplication.clipboard().setText(dstText)
         else:
-            self.statusbar.showMessage(hint.failed)
+            self.statusbar.showMessage(hint['failed'])
 
     @pyqtSlot()
     def textChanged(self):
@@ -238,7 +244,7 @@ class MainWindow(QMainWindow):
         if len(srcText) > MAX_WORD:
             srcText = srcText[:MAX_WORD]
             self.srcArea.textArea.setText(srcText)
-            self.statusbar.showMessage(hint.exceed)
+            self.statusbar.showMessage(hint['exceed'])
         self.updateWordNumLabel()
         self.transTimer.start(settings['TranlateDelay'])
 
@@ -268,6 +274,14 @@ class MainWindow(QMainWindow):
         helpWindow = HelpWindow()
         helpWindow.setWindowModality(Qt.ApplicationModal)
         helpWindow.exec()
+    
+    def checkUpdate(self):
+        if hasNewVersion():
+            print('need update')
+            updateWindow = UpdateWindow()
+            updateWindow.setWindowModality(Qt.ApplicationModal)
+            updateWindow.exec()
+        print('update over')
 
 
 if __name__ == '__main__':

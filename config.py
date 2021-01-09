@@ -1,10 +1,13 @@
 from PyQt5.QtCore import QSettings
 from os import path
+from hint import getHint
 from utils import decrypt
 
 BAIDU_URL = "https://fanyi-api.baidu.com/api/trans/vip/translate"
 GOOGLE_URL = "http://translate.google.cn/translate_a/single"
 YOUDAO_URL = "http://fanyi.youdao.com/translate"
+
+VERSION_URL = "https://raw.github.com/blueice-thu/MyTranslator/master/VersionInfo.json"
 
 DEBUG_FLAG = True
 
@@ -15,6 +18,7 @@ LANGUAGE_LIST = ["Auto", "Chinese", "English", "Japanese", "Traditional Chinese"
 LANGUAGE_VERSIONS = ['Chinese', 'English']
 
 INI_FILE = 'MyTranslator.ini'
+VERSION_FILE = 'VersionInfo.json'
 
 THEME_LIST = ['Default', 'Ubuntu', 'ElegantDark', 'Aqua', 'ManjaroMix', 'DarkOrange']
 
@@ -30,10 +34,11 @@ DEFAULT_SETTINGS = {
     "TranlateDelay": 1500,
     "AutoTrans": True,
     "AutoCopy": True,
+    "CheckUpdate": False,
     "BaiduAppid": "",
     "BaiduSecret": "",
     "Method": "Google",
-    'Theme': "Default"
+    'Theme': "Default",
 }
 
 
@@ -72,6 +77,7 @@ class Settings(dict):
         self['TranlateDelay'] = int(self['TranlateDelay'])
         self['AutoTrans'] = True if self['AutoTrans'] == 'true' else False
         self['AutoCopy'] = True if self['AutoCopy'] == 'true' else False
+        self['CheckUpdate'] = True if self['CheckUpdate'] == 'true' else False
         self.BAIDU_APPID = decrypt(self['BaiduAppid'])
         self.BAIDU_SECRET = decrypt(self['BaiduSecret'])
 
@@ -103,79 +109,4 @@ YOUDAO_LANGUAGES = {
     "Japanese": "JA"
 }
 
-
-class Hint:
-    def __init__(self, language):
-        self.original = 'Original'
-        self.target = 'Translation'
-        self.translate = 'Translate'
-        self.copy = 'Copy'
-        self.clear = 'Clear'
-        self.autoTrans = 'Auto Translate'
-        self.autoCopy = 'Auto Copy'
-        self.settings = 'Settings'
-        self.needReload = '(Need reload)'
-        self.help = 'Help'
-        self.yes = 'OK'
-        self.helpContent = '''
-            Baidu provides free translation server. Get APPID and Secret here: <br/><br/>
-            <a href='https://api.fanyi.baidu.com/product/11'>Register Baidu API</a><br/><br/>
-            Welcome to visit my Github: <br/><br/>
-            <a href='https://github.com/blueice-thu/MyTranslator'>Github</a>
-            &nbsp;
-            <a href='https://blueice-thu.github.io'>GitPage</a>
-        '''
-        self.exceed = 'Exceed the maximum word'
-        self.translating = 'Translating ... ...'
-        self.succeed = 'Succeed'
-        self.failed = 'Failed'
-        self.setLanguage = 'Language: '
-        self.setDelay = 'Translate Delay (ms): '
-        self.setTheme = 'Theme: '
-        self.methodList = ['Google', 'Baidu', 'Youdao']
-        self.method = 'Translate Method: '
-        self.baiduAppId = 'Baidu AppID: '
-        self.baiduSecret = 'Baidu Secret: '
-        self.write = 'Write'
-        self.cancel = 'Cancle'
-        self.save = 'Save'
-        self.tooManyContent = 'Too many characters and effect reduced'
-
-        if language == 'Chinese':
-            self.original = '原文'
-            self.target = '译文'
-            self.translate = '翻译'
-            self.copy = '复制'
-            self.clear = '清空'
-            self.autoTrans = '自动翻译'
-            self.autoCopy = '自动复制'
-            self.settings = '设置'
-            self.needReload = '(重启生效)'
-            self.help = '帮助'
-            self.yes = '确定'
-            self.helpContent = '''
-                百度提供免费的翻译服务，你可以注册以获得 APPID 和 Secret: <br/><br/>
-                <a href='https://api.fanyi.baidu.com/product/11'>注册百度翻译 API</a><br/><br/>
-                欢迎访问我的 Github: <br/><br/>
-                <a href='https://github.com/blueice-thu/MyTranslator'>Github</a>
-                &nbsp;
-                <a href='https://blueice-thu.github.io'>GitPage</a>
-            '''
-            self.exceed = '超过最大字数'
-            self.translating = '翻译中……'
-            self.succeed = '成功'
-            self.failed = '失败'
-            self.setLanguage = '语言: '
-            self.setDelay = '翻译延迟/ms: '
-            self.setTheme = '主题: '
-            self.methodList = ['谷歌', '百度', '有道']
-            self.method = '翻译引擎: '
-            self.baiduAppId = '百度翻译AppID: '
-            self.baiduSecret = '百度翻译密钥: '
-            self.write = '填写'
-            self.cancel = '取消'
-            self.save = '保存'
-            self.tooManyContent = '字符过多，可能影响翻译效果'
-
-
-hint = Hint(settings['LanguageVersion'])
+hint = getHint(settings['LanguageVersion'])

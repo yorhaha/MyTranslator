@@ -8,15 +8,15 @@
 
 主界面：
 
-![主界面](https://github.com/blueice-thu/MyTranslator/blob/master/preview/preview-main.png)
+![主界面](./preview/preview-main.png)
 
 黑暗主题界面：
 
-![主界面-黑暗](https://github.com/blueice-thu/MyTranslator/blob/master/preview/preview-main-dark.png)
+![主界面-黑暗](./preview/preview-main-dark.png)
 
 设置窗口：
 
-![主界面](https://github.com/blueice-thu/MyTranslator/blob/master/preview/preview-settings.png)
+![主界面](./preview/preview-settings.png)
 
 ### 人性化
 
