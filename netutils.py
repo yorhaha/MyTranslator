@@ -1,10 +1,9 @@
-# import requests
 import json
 from config import *
 from random import randint
-from requests import get as requestsGet
-from requests import post as requestsPost
+from utils import getUrl, postUrl
 from hashlib import md5
+
 
 def baiduTrans(text, lang_from, lang_to):
     if DEBUG_FLAG:
@@ -14,7 +13,7 @@ def baiduTrans(text, lang_from, lang_to):
     salt = randint(1e3, 1e6)
     sign = settings.BAIDU_APPID + text + str(salt) + settings.BAIDU_SECRET
     sign = md5(sign.encode()).hexdigest()
-    res = requestsPost(
+    res = postUrl(
         url=BAIDU_URL,
         data={
             "q": text,
@@ -46,10 +45,11 @@ def baiduTrans(text, lang_from, lang_to):
     answer = answer[:-1]
     return answer
 
+
 def googleTrans(text, langFrom, langTo):
     if DEBUG_FLAG:
         print('Using Google Method')
-    res = requestsGet(
+    res = getUrl(
         url=GOOGLE_URL,
         params={
             "client": "gtx",
@@ -71,6 +71,7 @@ def googleTrans(text, langFrom, langTo):
     answer = answer[:-1]
     return answer
 
+
 def youdaoTrans(text, langFrom, langTo, isSentence=True):
     if DEBUG_FLAG:
         print({
@@ -81,7 +82,7 @@ def youdaoTrans(text, langFrom, langTo, isSentence=True):
     transType = 'AUTO2' + YOUDAO_LANGUAGES[langTo]
     if langFrom != 'Auto':
         transType = YOUDAO_LANGUAGES[langFrom] + '2' + YOUDAO_LANGUAGES[langTo]
-    res = requestsGet(
+    res = getUrl(
         url=YOUDAO_URL,
         params={
             "doctype": "json",
@@ -106,12 +107,13 @@ def youdaoTrans(text, langFrom, langTo, isSentence=True):
     answer = answer[:-1]
     return answer
 
+
 def translateText(text, trans_method, lang_from, lang_to):
     if text is None:
         return None
     if text == "":
         return ""
-    
+
     if DEBUG_FLAG:
         print('translateText(', text, trans_method, lang_from, lang_to, ')')
 
@@ -122,4 +124,3 @@ def translateText(text, trans_method, lang_from, lang_to):
     elif trans_method == 'Youdao':
         return youdaoTrans(text, lang_from, lang_to)
     return None
-

@@ -82,7 +82,8 @@ def readQss(path, filename):
 
 
 headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 '
+                  'Safari/537.36 '
 }
 proxies = {
     'http': None,
@@ -90,13 +91,28 @@ proxies = {
 }
 
 
-def getUrl(url):
+def getUrl(url, params=None):
     s = session()
     s.keep_alive = False
     response = s.get(
         url=url,
         headers=headers,
         proxies=proxies,
+        params=params,
+        timeout=3
+    )
+    return response
+
+
+def postUrl(url, json=None, data=None):
+    s = session()
+    s.keep_alive = False
+    response = s.post(
+        url=url,
+        headers=headers,
+        proxies=proxies,
+        json=json,
+        data=data,
         timeout=3
     )
     return response

@@ -138,9 +138,13 @@ class MainWindow(QMainWindow):
         self.dstArea.language.setCurrentIndex(self.dstArea.keys.index(settings['LangTo']))
         copyButton = QPushButton(hint['copy'])
         copyButton.clicked.connect(lambda: self.copyButtonClicked(self.dstArea.textArea.toPlainText()))
+        swapIcon = QIcon('./res/swap.png')
+        swapButton = QPushButton(icon=swapIcon)
+        swapButton.clicked.connect(self.swapSrcDst)
 
         self.autoCopyBox.setChecked(settings['AutoCopy'])
         self.autoCopyBox.stateChanged.connect(self.autoCopyChanged)
+        self.dstArea.bottomArea.addWidget(swapButton)
         self.dstArea.bottomArea.addStretch(1)
         self.dstArea.bottomArea.addWidget(self.autoCopyBox)
         self.dstArea.bottomArea.addWidget(copyButton)
@@ -205,6 +209,12 @@ class MainWindow(QMainWindow):
     def copyButtonClicked(self, text):
         copyText(text)
         self.srcArea.textArea.setFocus()
+
+    @pyqtSlot()
+    def swapSrcDst(self):
+        print(self.dstArea.textArea.toPlainText())
+        self.srcArea.textArea.setText(self.dstArea.textArea.toPlainText())
+        self.dstArea.textArea.clear()
 
     @pyqtSlot()
     def clearButtonClicked(self):
