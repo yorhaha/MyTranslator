@@ -9,6 +9,10 @@ class BaseDialog(QDialog):
     def __init__(self):
         super(BaseDialog, self).__init__()
         self.loadTheme()
+        self.resize(400, 200)
+        self.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint)
+        self.setFont(QFont('Microsoft YaHei', 10))
+        moveCenter(self)
 
     def loadTheme(self, theme=None):
         if theme is None:
@@ -22,13 +26,8 @@ class HelpWindow(BaseDialog):
         self.initUI()
 
     def initUI(self):
-        self.loadTheme()
-        self.resize(400, 200)
         self.setWindowTitle(hint['help'])
         self.setWindowIcon(QIcon('./res/translate.png'))
-        self.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint)
-        self.setFont(QFont('Microsoft YaHei', 10))
-        moveCenter(self)
 
         mainVBox = QVBoxLayout()
         firstLabel = QLabel()
@@ -147,8 +146,6 @@ class SettingsWindow(BaseDialog):
         self.resize(600, 300)
         self.setWindowTitle(hint['settings'])
         self.setWindowIcon(QIcon('./res/settings.png'))
-        self.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint)
-        self.setFont(QFont('Microsoft YaHei', 10))
         moveCenter(self)
 
         hBox = QHBoxLayout()
@@ -188,15 +185,35 @@ class SettingsWindow(BaseDialog):
 
 
 class UpdateWindow(BaseDialog):
-    def __init__(self):
+    def __init__(self, newVersion):
         super().__init__()
+        self.newVersion = newVersion
         self.initUI()
-    
+
     def initUI(self):
-        self.loadTheme()
-        self.resize(400, 200)
-        self.setWindowTitle(hint['help'])
-        self.setWindowIcon(QIcon('./res/translate.png'))
-        self.setWindowFlags(Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint)
-        self.setFont(QFont('Microsoft YaHei', 10))
-        moveCenter(self)
+        self.setWindowTitle(hint['update'])
+        self.setWindowIcon(QIcon('./res/update.png'))
+
+        okButton = QPushButton(hint['yes'])
+        okButton.clicked.connect(self.close)
+
+        firstLabel = QLabel()
+        firstLabel.setText(hint['updateDetected'] + self.newVersion['Version']
+                           + '\n' + hint['updateInfo'] + self.newVersion['UpdateInfo'])
+        # firstLabel.setOpenExternalLinks(True)
+        # firstLabel.setAlignment(Qt.AlignCenter)
+
+        vButtonBox = QVBoxLayout()
+        vButtonBox.addWidget(okButton)
+
+        hbox = QHBoxLayout()
+        hbox.addStretch(1)
+        hbox.addWidget(firstLabel)
+        hbox.addLayout(vButtonBox)
+        hbox.addStretch(1)
+
+        mainVBox = QVBoxLayout()
+        mainVBox.addWidget(firstLabel)
+        mainVBox.addLayout(hbox)
+
+        self.setLayout(mainVBox)

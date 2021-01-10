@@ -9,6 +9,7 @@ from utils import *
 from Updater import hasNewVersion
 from childWindows import HelpWindow, SettingsWindow, UpdateWindow
 import sys
+from time import sleep
 from threading import Thread
 
 
@@ -32,6 +33,23 @@ class TranslateThread(QObject):
             if DEBUG_FLAG:
                 print(str(ex))
             self.overSignal.emit("")
+
+
+class UpdateThread(QObject):
+    overSignal = pyqtSignal(dict)
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+
+    @pyqtSlot()
+    def checkUpdate(self):
+        if DEBUG_FLAG:
+            print("checkUpdate")
+        newVersion = hasNewVersion()
+        if newVersion:
+            print('need update')
+            self.overSignal.emit(newVersion)
+        print('update over')
 
 
 class TransArea(QWidget):
@@ -73,6 +91,7 @@ class TransArea(QWidget):
 
 class MainWindow(QMainWindow):
     requestTransSignal = pyqtSignal(str, str, str)
+    startUpdateSignal = pyqtSignal()
 
     def __init__(self):
         super().__init__()
@@ -86,13 +105,16 @@ class MainWindow(QMainWindow):
         self.transTimer = QTimer()
         self.transTimer.setSingleShot(True)
         self.translateThread = QThread()
-        self.innerThread = TranslateThread()
+        self.innerTransThread = TranslateThread()
+        self.updateThread = QThread()
+        self.innerUpdateThread = UpdateThread()
 
         self.wordNumLabel = QLabel()
         self.autoTransBox = QCheckBox(hint['autoTrans'])
         self.autoCopyBox = QCheckBox(hint['autoCopy'])
         self.translateButton = QPushButton(hint['translate'])
 
+        self.topWindow = False
         self.topAction = QAction(QIcon('res/top.png'), '&Top', self)
         self.topAction.triggered.connect(self.changeTop)
 
@@ -100,11 +122,9 @@ class MainWindow(QMainWindow):
         self.loadTheme()
         self.initConnections()
         self.srcArea.textArea.setFocus()
-        self.changeTop()
         
         if settings['CheckUpdate']:
-            updateThread = Thread(target=self.checkUpdate)
-            updateThread.start()
+            self.startUpdateSignal.emit()
 
     def loadTheme(self, theme=None):
         if theme is None:
@@ -194,10 +214,15 @@ class MainWindow(QMainWindow):
         self.srcArea.textArea.textChanged.connect(self.textChanged)
         self.transTimer.timeout.connect(self.translate)
 
-        self.requestTransSignal.connect(self.innerThread.startTrans)
-        self.innerThread.overSignal.connect(self.updateDstArea)
-        self.innerThread.moveToThread(self.translateThread)
+        self.requestTransSignal.connect(self.innerTransThread.startTrans)
+        self.innerTransThread.overSignal.connect(self.updateDstArea)
+        self.innerTransThread.moveToThread(self.translateThread)
         self.translateThread.start()
+
+        self.startUpdateSignal.connect(self.innerUpdateThread.checkUpdate)
+        self.innerUpdateThread.overSignal.connect(self.showUpdateWindow)
+        self.innerUpdateThread.moveToThread(self.updateThread)
+        self.updateThread.start()
 
     @pyqtSlot(int)
     def setSrcLanguage(self, i):
@@ -290,25 +315,26 @@ class MainWindow(QMainWindow):
         helpWindow.setWindowModality(Qt.ApplicationModal)
         helpWindow.exec()
 
-    @pyqtSlot()
-    def checkUpdate(self):
-        if hasNewVersion():
-            print('need update')
-            updateWindow = UpdateWindow()
+    @pyqtSlot(dict)
+    def showUpdateWindow(self, newVersion):
+        if newVersion:
+            sleep(1)
+            updateWindow = UpdateWindow(newVersion)
             updateWindow.setWindowModality(Qt.ApplicationModal)
             updateWindow.exec()
-        print('update over')
 
     def changeTop(self):
-        top = settings['TopWindow']
-        settings['TopWindow'] = not top
-        if not top:
+        self.topWindow = not self.topWindow
+        if self.topWindow:
             self.topAction.setIcon(QIcon('./res/topped.png'))
             self.setWindowFlags(Qt.WindowStaysOnTopHint)
+            self.statusbar.showMessage(hint['setTop'])
         else:
             self.topAction.setIcon(QIcon('./res/top.png'))
             self.setWindowFlags(Qt.Widget)
+            self.statusbar.showMessage(hint['cancelTop'])
         self.show()
+        self.srcArea.textArea.setFocus()
 
 
 if __name__ == '__main__':

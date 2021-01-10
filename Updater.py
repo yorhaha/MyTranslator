@@ -21,10 +21,13 @@ def getNewestVersion():
 
 def hasNewVersion():
     current = getCurrentVersion()
+    # TODO
+    return current
     try:
         newest = getNewestVersion()
-        return float(current['Version']) < float(newest['Version'])
+        if float(current['Version']) < float(newest['Version']):
+            return newest
     except Exception as e:
         print(e)
-        return False
+    return None
 

@@ -26,7 +26,10 @@ HintSet = {
     'settings':     ['设置',                'Settings'],
     'needReload':   ['(重启生效)',          '(Need reload)'],
     'help':         ['帮助',                'Help'],
+    'update':       ['更新',                'Update'],
     'top':          ['置顶',                'Top'],
+    'setTop':       ['置顶',                'Top'],
+    'cancelTop':    ['取消置顶',             'Top'],
     'yes':          ['确定',                'OK'],
     'exceed':       ['超过最大字数',        'Exceed the maximum word'],
     'translating':  ['翻译中……',            'Translating ... ...'],
@@ -43,6 +46,8 @@ HintSet = {
     'save':         ['保存',                'Save'],
     'methodList':   [['谷歌', '百度', '有道'], ['Google', 'Baidu', 'Youdao']],
     'tooManyContent': ['字符过多，可能影响翻译效果', 'Too many characters and effect reduced'],
+    'updateDetected': ['检测到新版本：', 'New version detected: '],
+    'updateInfo': ['更新日志：', 'Update Info: '],
     'helpContent': [ChineseHelpContent, EnglishHelpContent]
 }
 
