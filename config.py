@@ -39,6 +39,7 @@ DEFAULT_SETTINGS = {
     "BaiduSecret": "",
     "Method": "Google",
     'Theme': "Default",
+    'TopWindow': False
 }
 
 
@@ -78,6 +79,7 @@ class Settings(dict):
         self['AutoTrans'] = True if self['AutoTrans'] == 'true' else False
         self['AutoCopy'] = True if self['AutoCopy'] == 'true' else False
         self['CheckUpdate'] = True if self['CheckUpdate'] == 'true' else False
+        self['TopWindow'] = True if self['TopWindow'] == 'true' else False
         self.BAIDU_APPID = decrypt(self['BaiduAppid'])
         self.BAIDU_SECRET = decrypt(self['BaiduSecret'])
 

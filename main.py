@@ -93,10 +93,14 @@ class MainWindow(QMainWindow):
         self.autoCopyBox = QCheckBox(hint['autoCopy'])
         self.translateButton = QPushButton(hint['translate'])
 
+        self.topAction = QAction(QIcon('res/top.png'), '&Top', self)
+        self.topAction.triggered.connect(self.changeTop)
+
         self.initUI()
         self.loadTheme()
         self.initConnections()
         self.srcArea.textArea.setFocus()
+        self.changeTop()
         
         if settings['CheckUpdate']:
             updateThread = Thread(target=self.checkUpdate)
@@ -138,8 +142,7 @@ class MainWindow(QMainWindow):
         self.dstArea.language.setCurrentIndex(self.dstArea.keys.index(settings['LangTo']))
         copyButton = QPushButton(hint['copy'])
         copyButton.clicked.connect(lambda: self.copyButtonClicked(self.dstArea.textArea.toPlainText()))
-        swapIcon = QIcon('./res/swap.png')
-        swapButton = QPushButton(icon=swapIcon)
+        swapButton = QPushButton(icon=QIcon('./res/swap.png'))
         swapButton.clicked.connect(self.swapSrcDst)
 
         self.autoCopyBox.setChecked(settings['AutoCopy'])
@@ -152,6 +155,8 @@ class MainWindow(QMainWindow):
     def initToolbar(self):
         toolbar = self.addToolBar(hint['settings'])
         toolbar.setMovable(False)
+
+        toolbar.addAction(self.topAction)
 
         settingsAction = QAction(QIcon('res/settings.png'), '&Settings', self)
         settingsAction.triggered.connect(self.openSettings)
@@ -284,7 +289,8 @@ class MainWindow(QMainWindow):
         helpWindow = HelpWindow()
         helpWindow.setWindowModality(Qt.ApplicationModal)
         helpWindow.exec()
-    
+
+    @pyqtSlot()
     def checkUpdate(self):
         if hasNewVersion():
             print('need update')
@@ -292,6 +298,17 @@ class MainWindow(QMainWindow):
             updateWindow.setWindowModality(Qt.ApplicationModal)
             updateWindow.exec()
         print('update over')
+
+    def changeTop(self):
+        top = settings['TopWindow']
+        settings['TopWindow'] = not top
+        if not top:
+            self.topAction.setIcon(QIcon('./res/topped.png'))
+            self.setWindowFlags(Qt.WindowStaysOnTopHint)
+        else:
+            self.topAction.setIcon(QIcon('./res/top.png'))
+            self.setWindowFlags(Qt.Widget)
+        self.show()
 
 
 if __name__ == '__main__':

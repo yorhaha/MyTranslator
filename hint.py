@@ -26,6 +26,7 @@ HintSet = {
     'settings':     ['设置',                'Settings'],
     'needReload':   ['(重启生效)',          '(Need reload)'],
     'help':         ['帮助',                'Help'],
+    'top':          ['置顶',                'Top'],
     'yes':          ['确定',                'OK'],
     'exceed':       ['超过最大字数',        'Exceed the maximum word'],
     'translating':  ['翻译中……',            'Translating ... ...'],
