@@ -7,3 +7,4 @@ dist/
 MyTranslator.ini
 .idea/
 history.txt
+*.pyo

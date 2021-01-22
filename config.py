@@ -9,7 +9,7 @@ YOUDAO_URL = "http://fanyi.youdao.com/translate"
 
 VERSION_URL = "https://raw.github.com/blueice-thu/MyTranslator/master/VersionInfo.json"
 
-DEBUG_FLAG = True
+DEBUG_FLAG = False
 
 DELAY_LIST = [1000, 1500, 2000, 2500, 3000, 4000]
 
