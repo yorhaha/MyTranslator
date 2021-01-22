@@ -203,6 +203,10 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
         widget.setLayout(mainVBox)
 
+        srcText, dstText = readHistory(HISTORY_FILE)
+        self.srcArea.textArea.setText(srcText)
+        self.dstArea.textArea.setText(dstText)
+
         self.resize(1200, 800)
         self.setWindowTitle('My Translator')
         self.setWindowIcon(QIcon('./res/translate.png'))
@@ -270,6 +274,7 @@ class MainWindow(QMainWindow):
             print('updateDstArea(', dstText, ')', len(dstText))
         if dstText != "":
             self.dstArea.textArea.setText(dstText)
+            writeHistory(HISTORY_FILE, self.srcArea.textArea.toPlainText(), dstText)
             self.statusbar.showMessage(hint['succeed'])
             if settings['AutoCopy']:
                 QApplication.clipboard().setText(dstText)

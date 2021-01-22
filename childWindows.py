@@ -200,8 +200,6 @@ class UpdateWindow(BaseDialog):
         firstLabel = QLabel()
         firstLabel.setText(hint['updateDetected'] + self.newVersion['Version']
                            + '\n' + hint['updateInfo'] + self.newVersion['UpdateInfo'])
-        # firstLabel.setOpenExternalLinks(True)
-        # firstLabel.setAlignment(Qt.AlignCenter)
 
         vButtonBox = QVBoxLayout()
         vButtonBox.addWidget(okButton)

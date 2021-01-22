@@ -116,3 +116,19 @@ def postUrl(url, json=None, data=None):
         timeout=3
     )
     return response
+
+
+devider = '\nds7aKJB3b2hbh4B3H4JvvU5JBBb4hh32jj\n'
+
+
+def writeHistory(filename, srcText, dstText):
+    with open(filename, 'w', encoding='utf8') as f:
+        f.write(srcText + devider + dstText)
+
+
+def readHistory(filename):
+    try:
+        with open(filename, 'r', encoding='utf8') as f:
+            return f.read().split(devider)
+    except Exception as err:
+        return "", ""

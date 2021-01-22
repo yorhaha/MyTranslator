@@ -19,6 +19,7 @@ LANGUAGE_VERSIONS = ['Chinese', 'English']
 
 INI_FILE = 'MyTranslator.ini'
 VERSION_FILE = 'VersionInfo.json'
+HISTORY_FILE = 'history.txt'
 
 THEME_LIST = ['Default', 'Ubuntu', 'ElegantDark', 'Aqua', 'ManjaroMix', 'DarkOrange']
 

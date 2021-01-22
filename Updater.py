@@ -21,8 +21,8 @@ def getNewestVersion():
 
 def hasNewVersion():
     current = getCurrentVersion()
-    # TODO
-    return current
+    # # TODO
+    # return current
     try:
         newest = getNewestVersion()
         if float(current['Version']) < float(newest['Version']):

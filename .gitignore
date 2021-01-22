@@ -6,3 +6,4 @@ dist/
 *.spec
 MyTranslator.ini
 .idea/
+history.txt
